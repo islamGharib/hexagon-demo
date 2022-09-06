@@ -1,23 +1,27 @@
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
-import 'dart:ui' as ui show Image ;
-import 'package:http/http.dart' as http;
-import 'package:quiver/cache.dart';
+import 'package:image/image.dart' as image;
 
-Future<void> main() async {
-  var cache = MapCache<String, ui.Image>();
-  var myUri = 'https://img.freepik.com/free-photo/horizontal-shot-smiling-curly-haired-woman-indicates-free-space-demonstrates-place-your-advertisement-attracts-attention-sale-wears-green-turtleneck-isolated-vibrant-pink-wall_273609-42770.jpg?t=st=1648470843~exp=1648471443~hmac=e627e64a2eec9d1abe3d9db23ecb082fc29cadb26da7ab313811130fb0bf4169&w=900';
-  var img = await cache.get(myUri , ifAbsent: (uri){
-    print('getting not cached image from $uri');
-    return http.get(Uri.parse(uri)).then((resp) => decodeImageFromList(resp.bodyBytes));
-  });
-  runApp(HexagonGridDemo(img!));
+
+void main()  {
+  runApp(HexagonGridDemo());
+}
+
+
+Future<ui.Image> getUiImage(String imageAssetPath, int height, int width) async {
+  final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
+  image.Image? baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List());
+  image.Image resizeImage = image.copyResize(baseSizeImage!, height: height, width: width);
+  ui.Codec codec = await ui.instantiateImageCodec(Uint8List.fromList(image.encodePng(resizeImage)));
+  ui.FrameInfo frameInfo = await codec.getNextFrame();
+  return frameInfo.image;
 }
 
 class HexagonGridDemo extends StatelessWidget {
-  final ui.Image myBackground;
-  HexagonGridDemo(this.myBackground);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,15 +29,20 @@ class HexagonGridDemo extends StatelessWidget {
         appBar: AppBar(
           title: Text('Hexagon Grid Demo'),
         ),
-        body: Container(
-          color: Colors.grey[200],
-          padding: EdgeInsets.all(8),
-          child: LayoutBuilder(builder: (context, constraints) {
+        body: FutureBuilder(
+          future: getUiImage('assets/images/islam.jpg', 100, 100),
+          builder: (context, AsyncSnapshot<ui.Image> snapshot){
             return Container(
-              color: Colors.transparent,
-              child: HexagonGrid(constraints.maxWidth, constraints.maxHeight, myBackground),
+              color: Colors.grey[200],
+              padding: EdgeInsets.all(8),
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Container(
+                  color: Colors.transparent,
+                  child: HexagonGrid(constraints.maxWidth, constraints.maxHeight, snapshot.data),
+                );
+              }),
             );
-          }),
+          },
         ),
       ),
     );
@@ -49,20 +58,19 @@ class HexagonGrid extends StatelessWidget {
   final double screenHeight;
   final double radius;
   final double height;
-  final ui.Image myBackground;
-
+  final ui.Image? backgroundImage;
 
   final List<HexagonPaint> hexagons = [];
 
-  HexagonGrid(this.screenWidth, this.screenHeight,this.myBackground)
+  HexagonGrid(this.screenWidth, this.screenHeight, this.backgroundImage)
       : radius = computeRadius(screenWidth, screenHeight),
         height = computeHeight(computeRadius(screenWidth, screenHeight)) {
     for (int x = 0; x < nrX; x++) {
       for (int y = 0; y < nrY; y++) {
         if((x==2 && y==4) || (x==4 && y==5)) {
-          hexagons.add(HexagonPaint(computeCenter(x, y), radius, true, myBackground));
+          hexagons.add(HexagonPaint(computeCenter(x, y), radius, true, this.backgroundImage));
         } else {
-          hexagons.add(HexagonPaint(computeCenter(x, y), radius, false, myBackground));
+          hexagons.add(HexagonPaint(computeCenter(x, y), radius, false, this.backgroundImage));
         }
       }
     }
@@ -128,14 +136,14 @@ class HexagonPaint extends StatelessWidget {
   final Offset center;
   final double radius;
   final bool changeColor;
-  final ui.Image myBackground;
+  final ui.Image? backgroundImage;
 
-  HexagonPaint(this.center, this.radius, this.changeColor, this.myBackground);
+  HexagonPaint(this.center, this.radius, this.changeColor, this.backgroundImage);
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: HexagonPainter(center, radius, changeColor, myBackground),
+      painter: HexagonPainter(center, radius, changeColor,this.backgroundImage),
     );
   }
 }
@@ -145,19 +153,24 @@ class HexagonPainter extends CustomPainter {
   final double radius;
   final Offset center;
   final bool changeColor;
-  final ui.Image myBackground;
+  final ui.Image? backgroundImage;
 
-  HexagonPainter(this.center, this.radius, this.changeColor, this.myBackground);
+  HexagonPainter(this.center, this.radius, this.changeColor, this.backgroundImage);
 
   @override
-  void paint(Canvas canvas, Size size) {
+  void paint(Canvas canvas, Size size){
     Paint paint;
     paint = Paint()..color = Colors.blue;
-
+    //var image = await getUiImage('assets/images/islam.jpg', 100, 100);
     Path path = createHexagonPath();
+
     if(changeColor) {
-      canvas.drawImage(myBackground, center, paint);
-    } else {
+      if(backgroundImage != null){
+        canvas.drawPath(path, Paint()
+            ..shader = ImageShader(backgroundImage!, TileMode.mirror, TileMode.mirror, Matrix4.identity().scaled(1.0).storage)
+        );
+      }
+    }else{
       canvas.drawPath(path, paint);
     }
   }
