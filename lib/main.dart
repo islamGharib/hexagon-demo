@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
@@ -12,14 +13,34 @@ void main()  {
 }
 
 
-Future<ui.Image> getUiImage(String imageAssetPath, int height, int width) async {
+Future<Shader> getUiImage(String imageAssetPath, int height, int width) async {
   final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
   image.Image? baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List());
   image.Image resizeImage = image.copyResize(baseSizeImage!, height: height, width: width);
   ui.Codec codec = await ui.instantiateImageCodec(Uint8List.fromList(image.encodePng(resizeImage)));
   ui.FrameInfo frameInfo = await codec.getNextFrame();
-  return frameInfo.image;
+  return getImageShader(frameInfo.image, height.toDouble(), width.toDouble());
 }
+
+Future<Shader> getImageShader (ui.Image image, double height, double width)  async {
+  final completer = Completer<ImageInfo>();
+  final ByteData? bytedata = await image.toByteData(format: ui.ImageByteFormat.png);
+  final Uint8List headedIntList = Uint8List.view(bytedata!.buffer);
+
+  // use the ResizeImage provider to resolve the image in the required size
+  ResizeImage(MemoryImage(headedIntList), width: width.toInt(), height:  height.toInt())
+      .resolve(ImageConfiguration(size: Size(width, height)))
+      .addListener(ImageStreamListener((info, _) => completer.complete(info)));
+
+  final info = await completer.future;
+  return ImageShader(
+    info.image,
+    TileMode.mirror,
+    TileMode.mirror,
+    Float64List.fromList(Matrix4.identity().storage),
+  );
+}
+
 
 class HexagonGridDemo extends StatelessWidget {
   @override
@@ -31,7 +52,7 @@ class HexagonGridDemo extends StatelessWidget {
         ),
         body: FutureBuilder(
           future: getUiImage('assets/images/islam.jpg', 100, 100),
-          builder: (context, AsyncSnapshot<ui.Image> snapshot){
+          builder: (context, AsyncSnapshot<Shader> snapshot){
             return Container(
               color: Colors.grey[200],
               padding: EdgeInsets.all(8),
@@ -58,7 +79,7 @@ class HexagonGrid extends StatelessWidget {
   final double screenHeight;
   final double radius;
   final double height;
-  final ui.Image? backgroundImage;
+  final Shader? backgroundImage;
 
   final List<HexagonPaint> hexagons = [];
 
@@ -68,9 +89,9 @@ class HexagonGrid extends StatelessWidget {
     for (int x = 0; x < nrX; x++) {
       for (int y = 0; y < nrY; y++) {
         if((x==2 && y==4) || (x==4 && y==5)) {
-          hexagons.add(HexagonPaint(computeCenter(x, y), radius, true, this.backgroundImage));
+          hexagons.add(HexagonPaint(computeCenter(x, y), radius, true, backgroundImage));
         } else {
-          hexagons.add(HexagonPaint(computeCenter(x, y), radius, false, this.backgroundImage));
+          hexagons.add(HexagonPaint(computeCenter(x, y), radius, false, backgroundImage));
         }
       }
     }
@@ -136,7 +157,7 @@ class HexagonPaint extends StatelessWidget {
   final Offset center;
   final double radius;
   final bool changeColor;
-  final ui.Image? backgroundImage;
+  final Shader? backgroundImage;
 
   HexagonPaint(this.center, this.radius, this.changeColor, this.backgroundImage);
 
@@ -153,7 +174,7 @@ class HexagonPainter extends CustomPainter {
   final double radius;
   final Offset center;
   final bool changeColor;
-  final ui.Image? backgroundImage;
+  final Shader? backgroundImage;
 
   HexagonPainter(this.center, this.radius, this.changeColor, this.backgroundImage);
 
@@ -167,7 +188,7 @@ class HexagonPainter extends CustomPainter {
     if(changeColor) {
       if(backgroundImage != null){
         canvas.drawPath(path, Paint()
-            ..shader = ImageShader(backgroundImage!, TileMode.mirror, TileMode.mirror, Matrix4.identity().scaled(1.0).storage)
+            ..shader = backgroundImage!,
         );
       }
     }else{
