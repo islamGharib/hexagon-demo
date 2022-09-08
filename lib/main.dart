@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'dart:math' as math;
 import 'package:image/image.dart' as image;
 
@@ -47,22 +48,19 @@ class HexagonGridDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text('Hexagon Grid Demo'),
         ),
         body: FutureBuilder(
           future: getUiImage('assets/images/islam.jpg', 100, 100),
           builder: (context, AsyncSnapshot<Shader> snapshot){
-            return Container(
-              color: Colors.grey[200],
-              padding: EdgeInsets.all(8),
-              child: LayoutBuilder(builder: (context, constraints) {
-                return Container(
-                  color: Colors.transparent,
-                  child: HexagonGrid(constraints.maxWidth, constraints.maxHeight, snapshot.data),
-                );
-              }),
-            );
+            return LayoutBuilder(builder: (context, constraints) {
+              return Container(
+                color: Colors.transparent,
+                child: HexagonGrid(constraints.maxWidth, constraints.maxHeight, snapshot.data),
+              );
+            });
           },
         ),
       ),
@@ -72,9 +70,9 @@ class HexagonGridDemo extends StatelessWidget {
 
 class HexagonGrid extends StatelessWidget {
   static const int nrX = 7;
-  static const int nrY = 9;
-  static const int marginY = 5;
-  static const int marginX = 5;
+  static const int nrY = 10;
+  static const int marginY = 0;
+  static const int marginX = 0;
   final double screenWidth;
   final double screenHeight;
   final double radius;
@@ -181,9 +179,14 @@ class HexagonPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size){
     Paint paint;
-    paint = Paint()..color = Colors.blue;
+    paint = Paint()..color = HexColor('E9EDEF');
     //var image = await getUiImage('assets/images/islam.jpg', 100, 100);
     Path path = createHexagonPath();
+    final borderPaint = Paint()
+      ..color = HexColor('002744')
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    canvas.drawPath(path, borderPaint);
 
     if(changeColor) {
       if(backgroundImage != null){
