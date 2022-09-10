@@ -191,17 +191,27 @@ class HexagonPainter extends CustomPainter {
 
     if(changeColor) {
       if(backgroundImage != null){
+                                // to draw a circle
          // Paint paintCircle = Paint()..color = Colors.black;
         // canvas.drawCircle(center, radius-7, paint);
+                                // use this if there is no hexagon path exist
+        // final center = Offset(50, 50);
+        // final radius = math.min(size.width, size.height) / 8;
+        // // var drawImageWidth = 0.0;
+        // var drawImageHeight = -size.height*0.8;
+        //path.addOval(Rect.fromLTWH(drawImageWidth, drawImageHeight, backgroundImage!.width.toDouble(), backgroundImage!.height.toDouble()));
 
                                 // to fill image inside my path (Hexagon path)
-        // width and height of the part of the image will display
-        var drawImageWidth = 0.0;
-        var drawImageHeight = -size.height*0.8;
-        // adding a rectangle where my image will display inside it
-        path.addOval(Rect.fromLTWH(drawImageWidth, drawImageHeight, backgroundImage!.width.toDouble(), backgroundImage!.height.toDouble()));
-        // clipping the rectangle to be the the as path shape(hexagon)
-        canvas.clipPath(path);
+              // clipping the rectangle image to be the the as path shape(hexagon)
+        // canvas.clipPath(path);
+              // draw my image inside the clipping hexagon
+        // canvas.drawImage(backgroundImage!, Offset(center.dx - backgroundImage!.width / 2, center.dy - backgroundImage!.height / 2), paint);
+
+                                // to fill image inside a circle using a new Path inside my hexagon path
+        // creating a new circle Path at the same offset of my hexagon path(center) but less than radius
+        Path circlePath = Path()..addOval(Rect.fromCircle(center: center, radius: radius-7));
+        // clipping the rectangle image to be a circlePath shape
+        canvas.clipPath(circlePath);
         // draw my image inside the clipping hexagon
         canvas.drawImage(backgroundImage!, Offset(center.dx - backgroundImage!.width / 2, center.dy - backgroundImage!.height / 2), paint);
       }
