@@ -14,13 +14,14 @@ void main()  {
 }
 
 
-Future<Shader> getUiImage(String imageAssetPath, int height, int width) async {
+Future<ui.Image> getUiImage(String imageAssetPath, int height, int width) async {
   final ByteData assetImageByteData = await rootBundle.load(imageAssetPath);
   image.Image? baseSizeImage = image.decodeImage(assetImageByteData.buffer.asUint8List());
   image.Image resizeImage = image.copyResize(baseSizeImage!, height: height, width: width);
   ui.Codec codec = await ui.instantiateImageCodec(Uint8List.fromList(image.encodePng(resizeImage)));
   ui.FrameInfo frameInfo = await codec.getNextFrame();
-  return getImageShader(frameInfo.image, height.toDouble(), width.toDouble());
+  //return getImageShader(frameInfo.image, height.toDouble(), width.toDouble());
+  return frameInfo.image;
 }
 
 Future<Shader> getImageShader (ui.Image image, double height, double width)  async {
@@ -54,7 +55,7 @@ class HexagonGridDemo extends StatelessWidget {
         ),
         body: FutureBuilder(
           future: getUiImage('assets/images/islam.jpg', 100, 100),
-          builder: (context, AsyncSnapshot<Shader> snapshot){
+          builder: (context, AsyncSnapshot<ui.Image> snapshot){
             return LayoutBuilder(builder: (context, constraints) {
               return Container(
                 color: Colors.transparent,
@@ -69,15 +70,15 @@ class HexagonGridDemo extends StatelessWidget {
 }
 
 class HexagonGrid extends StatelessWidget {
-  static const int nrX = 7;
-  static const int nrY = 10;
+  static const int nrX = 6;
+  static const int nrY = 9;
   static const int marginY = 0;
   static const int marginX = 0;
   final double screenWidth;
   final double screenHeight;
   final double radius;
   final double height;
-  final Shader? backgroundImage;
+  final ui.Image? backgroundImage;
 
   final List<HexagonPaint> hexagons = [];
 
@@ -155,14 +156,14 @@ class HexagonPaint extends StatelessWidget {
   final Offset center;
   final double radius;
   final bool changeColor;
-  final Shader? backgroundImage;
+  final ui.Image? backgroundImage;
 
   HexagonPaint(this.center, this.radius, this.changeColor, this.backgroundImage);
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
-      painter: HexagonPainter(center, radius, changeColor,this.backgroundImage),
+      painter: HexagonPainter(center, radius, changeColor,backgroundImage),
     );
   }
 }
@@ -172,7 +173,7 @@ class HexagonPainter extends CustomPainter {
   final double radius;
   final Offset center;
   final bool changeColor;
-  final Shader? backgroundImage;
+  final ui.Image? backgroundImage;
 
   HexagonPainter(this.center, this.radius, this.changeColor, this.backgroundImage);
 
@@ -190,9 +191,19 @@ class HexagonPainter extends CustomPainter {
 
     if(changeColor) {
       if(backgroundImage != null){
-        canvas.drawPath(path, Paint()
-            ..shader = backgroundImage!,
-        );
+         // Paint paintCircle = Paint()..color = Colors.black;
+        // canvas.drawCircle(center, radius-7, paint);
+
+                                // to fill image inside my path (Hexagon path)
+        // width and height of the part of the image will display
+        var drawImageWidth = 0.0;
+        var drawImageHeight = -size.height*0.8;
+        // adding a rectangle where my image will display inside it
+        path.addOval(Rect.fromLTWH(drawImageWidth, drawImageHeight, backgroundImage!.width.toDouble(), backgroundImage!.height.toDouble()));
+        // clipping the rectangle to be the the as path shape(hexagon)
+        canvas.clipPath(path);
+        // draw my image inside the clipping hexagon
+        canvas.drawImage(backgroundImage!, Offset(center.dx - backgroundImage!.width / 2, center.dy - backgroundImage!.height / 2), paint);
       }
     }else{
       canvas.drawPath(path, paint);
