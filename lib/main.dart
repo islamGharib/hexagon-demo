@@ -206,10 +206,11 @@ class HexagonPainter extends CustomPainter {
         // canvas.clipPath(path);
               // draw my image inside the clipping hexagon
         // canvas.drawImage(backgroundImage!, Offset(center.dx - backgroundImage!.width / 2, center.dy - backgroundImage!.height / 2), paint);
+        canvas.drawPath(path, paint);
 
                                 // to fill image inside a circle using a new Path inside my hexagon path
         // creating a new circle Path at the same offset of my hexagon path(center) but less than radius
-        Path circlePath = Path()..addOval(Rect.fromCircle(center: center, radius: radius-7));
+        Path circlePath = Path()..addOval(Rect.fromCircle(center: center, radius: radius/2));
         // clipping the rectangle image to be a circlePath shape
         canvas.clipPath(circlePath);
         // draw my image inside the clipping hexagon
