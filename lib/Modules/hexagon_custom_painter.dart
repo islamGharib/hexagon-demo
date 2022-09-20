@@ -46,11 +46,11 @@ class HexagonPainter extends CustomPainter {
   Path createHexagonPath() {
     final path = Path();
     var angle = (math.pi * 2) / SIDES_OF_HEXAGON;
-    Offset firstPoint = Offset(radius * math.cos(0.0), radius * math.sin(0.0));
+    Offset firstPoint = Offset(radius * math.sin(0.0), radius * math.cos(0.0));
     path.moveTo(firstPoint.dx + center.dx, firstPoint.dy + center.dy);
     for (int i = 1; i <= SIDES_OF_HEXAGON; i++) {
-      double x = radius * math.cos(angle * i) + center.dx;
-      double y = radius * math.sin(angle * i) + center.dy;
+      double x = radius * math.sin(angle * i) + center.dx;
+      double y = radius * math.cos(angle * i) + center.dy;
       path.lineTo(x, y);
     }
     path.close();

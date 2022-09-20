@@ -66,7 +66,7 @@ class BottomBarCustomPainter extends CustomPainter {
             color: HexColor('#C7D0D5'),
           fontFamily: 'Inter',
           fontWeight: FontWeight.w400,
-          fontSize: 13,
+          fontSize: internalHexagonRadius,
           //height: 19.36
         ),
         text: 'vs'
@@ -74,11 +74,10 @@ class BottomBarCustomPainter extends CustomPainter {
     TextPainter tp = TextPainter(
         text: span,
         textDirection: TextDirection.ltr,
-        textAlign: TextAlign.left
+        textAlign: TextAlign.center
     );
     tp.layout();
-    tp.paint(canvas, Offset(size.width / 3 + 3 * radius - radius / 3, size.height - 25.0 - radius / 2));
-
+    tp.paint(canvas, Offset(size.width / 3 + 3 * radius - tp.width / 2, size.height - 25.0 - tp.height / 2));
 
   }
 

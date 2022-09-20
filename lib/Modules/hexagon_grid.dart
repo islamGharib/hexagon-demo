@@ -53,18 +53,20 @@ class HexagonGrid extends StatelessWidget {
   }
 
   Offset computeCenter(int x, int y) {
-    var centerX = computeX(x);
+    var centerX = computeX(x, y);
     var centerY = computeY(x, y);
     return Offset(centerX, centerY);
   }
 
   computeY(int x, int y) {
     var centerY;
-    if (x % 2 == 0) {
-      centerY = y * height + y * marginY + height / 2;
-    } else {
-      centerY = y * height + (y + 0.5) * marginY + height;
-    }
+    // if (x % 2 == 0) {
+    //   centerY = y * height + y * marginY + height / 2;
+    // } else {
+    //   centerY = y * height + (y + 0.5) * marginY + height;
+    // }
+    //centerY = y * height + y * marginY + height / 2;
+    centerY =  y * marginY + y * 1.5 * radius + radius ;
     double marginsVertical = computeEmptySpaceY() / 2;
     return centerY + marginsVertical;
   }
@@ -73,9 +75,21 @@ class HexagonGrid extends StatelessWidget {
     return screenHeight - ((nrY - 1) * height + 1.5 * height + totalMarginY());
   }
 
-  double computeX(int x) {
+  double computeX(int x, int y) {
+    // if (x % 2 == 0) {
+    //   centerY = y * height + y * marginY + height / 2;
+    // } else {
+    //   centerY = y * height + (y + 0.5) * marginY + height;
+    // }
+    var centerX;
     double marginsHorizontal = computeEmptySpaceX() / 2;
-    return x * marginX + x * 1.5 * radius + radius + marginsHorizontal;
+    if(y % 2 == 0){
+      //centerX =  x * marginX + x * 1.5 * radius + radius ;
+      centerX = x * 2 * radius + x * marginX + 2 * radius / 2;
+    }else{
+      centerX =  x * 2 * radius + (x + 0.5) * marginX + 2 * radius;
+    }
+    return centerX + marginsHorizontal;
   }
 
   double computeEmptySpaceX() {
