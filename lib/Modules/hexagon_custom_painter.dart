@@ -22,7 +22,6 @@ class HexagonPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawPath(path, borderPaint);
-
     if(backgroundImage != null){
       // Paint paintCircle = Paint()..color = Colors.black;
       // canvas.drawCircle(center, radius-7, paint);
@@ -46,15 +45,28 @@ class HexagonPainter extends CustomPainter {
   Path createHexagonPath() {
     final path = Path();
     var angle = (math.pi * 2) / SIDES_OF_HEXAGON;
-    Offset firstPoint = Offset(radius * math.sin(0.0), radius * math.cos(0.0));
+    Offset firstPoint = Offset(radius * math.cos(0.0), radius * math.sin(0.0));
+    // Offset firstPoint = Offset(radius * math.sin(0.0), radius * math.cos(0.0));
     path.moveTo(firstPoint.dx + center.dx, firstPoint.dy + center.dy);
     for (int i = 1; i <= SIDES_OF_HEXAGON; i++) {
-      double x = radius * math.sin(angle * i) + center.dx;
-      double y = radius * math.cos(angle * i) + center.dy;
+      double x = radius * math.cos(angle * i) + center.dx;
+      double y = radius * math.sin(angle * i) + center.dy;
+      // double x = radius * math.sin(angle * i) + center.dx;
+      // double y = radius * math.cos(angle * i) + center.dy;
       path.lineTo(x, y);
     }
     path.close();
     return path;
+  }
+
+  void rotate(
+      {required Canvas canvas,
+        required double cx,
+        required double cy,
+        required double angle}) {
+    canvas.translate(cx, cy);
+    canvas.rotate(angle);
+    canvas.translate(-cx, -cy);
   }
 
   @override

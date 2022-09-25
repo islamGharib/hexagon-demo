@@ -9,13 +9,25 @@ class BottomBarCustomPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // 18 = 1/3 (size of the three hexagon) * 1/6 (number of the all radius 2+2+2)
-    double radius = size.width / 18 ;
+    Offset top = Offset(size.width / 3, size.height - 40);
+    Offset bottom = Offset(size.width / 3, size.height - 10);
+    Offset center = Offset((top.dx + bottom.dx) / 2, (top.dy + bottom.dy) / 2);
+    Offset radiusOffset = Offset(size.width / 3 + size.width /18, center.dy);
+    double distanceBetweenRadiusAndCenter = (radiusOffset - center).distance;
+
+    //Offset centerOfRigtLineRectangle = (size.width / 3, )
+    double radius = (radiusOffset - top).distance;
+    // double radius = size.width / 18;
     // center of the first hexagon
-    Path path1 = createHexagonPath(Offset(size.width / 3 + radius, size.height - 25.0), radius);
+    final hexagonBorderPaint = Paint()
+      ..color = HexColor('#002744')
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    Path path1 = createHexagonPath(radiusOffset, radius);
     // center of the second hexagon
-    Path path2 = createHexagonPath(Offset(size.width / 3 + 3 * radius, size.height - 25.0), radius);
+    Path path2 = createHexagonPath(Offset(radiusOffset.dx + 2 * distanceBetweenRadiusAndCenter, radiusOffset.dy), radius);
     // center of the third hexagon
-    Path path3 = createHexagonPath(Offset(size.width / 3 + 5 * radius, size.height - 25.0), radius);
+    Path path3 = createHexagonPath(Offset(radiusOffset.dx + 4 * distanceBetweenRadiusAndCenter, radiusOffset.dy), radius);
     Paint paint;
     paint = Paint()..color = HexColor('#005284');
     // drawing first rectangle from left to 1/3 of size width
@@ -28,7 +40,7 @@ class BottomBarCustomPainter extends CustomPainter {
     // drawing the 3 hexagon at the center of size width
     canvas.drawPath(path1, paint);
     canvas.drawPath(path2, paint);
-    canvas.drawPath(path3, paint);
+    canvas.drawPath(path2, hexagonBorderPaint);
     // drawing second rectangle from right to 1/3 of size width
     canvas.drawRect(
       Rect.fromLTRB(
@@ -36,6 +48,7 @@ class BottomBarCustomPainter extends CustomPainter {
       ),
       Paint()..color = HexColor('#003459'),
     );
+    canvas.drawPath(path3, paint);
     // adding an icon at the center of first hexagon
     const icon = Icons.menu;
     var builder = ui.ParagraphBuilder(ui.ParagraphStyle(
@@ -44,12 +57,12 @@ class BottomBarCustomPainter extends CustomPainter {
       ..addText(String.fromCharCode(icon.codePoint));
     var para = builder.build();
     para.layout(ui.ParagraphConstraints(width: radius));
-    canvas.drawParagraph(para, Offset(size.width / 3 + radius - para.width / 3, size.height - 25.0 - para.height / 2));
+    canvas.drawParagraph(para, Offset(size.width / 3 + distanceBetweenRadiusAndCenter - para.width / 4, radiusOffset.dy - para.height / 2));
 
     // drawing 2 internal hexagon at the middle hexagon
-    double internalHexagonRadius = radius / 6;
-    Path firstInternalHexagonPath = createHexagonPath(Offset((size.width / 3 + 3 * radius) - radius / 2, size.height - 25.0), internalHexagonRadius);
-    Path secondInternalHexagonPath = createHexagonPath(Offset((size.width / 3 + 3 * radius) + radius / 2, size.height - 25.0), internalHexagonRadius);
+    double internalHexagonRadius = radius / 4;
+    Path firstInternalHexagonPath = createHexagonPath(Offset((center.dx + 3 * distanceBetweenRadiusAndCenter) - distanceBetweenRadiusAndCenter / 2, radiusOffset.dy), internalHexagonRadius);
+    Path secondInternalHexagonPath = createHexagonPath(Offset((center.dx + 3 * distanceBetweenRadiusAndCenter) + distanceBetweenRadiusAndCenter / 2, radiusOffset.dy), internalHexagonRadius);
     final internalHexagonBorderPaint = Paint()
       ..color = HexColor('#C7D0D5')
       ..style = PaintingStyle.stroke
@@ -77,7 +90,7 @@ class BottomBarCustomPainter extends CustomPainter {
         textAlign: TextAlign.center
     );
     tp.layout();
-    tp.paint(canvas, Offset(size.width / 3 + 3 * radius - tp.width / 2, size.height - 25.0 - tp.height / 2));
+    tp.paint(canvas, Offset(center.dx + 3 * distanceBetweenRadiusAndCenter - tp.width / 2, radiusOffset.dy - tp.height / 2));
 
   }
 
@@ -87,11 +100,14 @@ class BottomBarCustomPainter extends CustomPainter {
     //const Offset center = Offset(50, 50);
     final path = Path();
     var angle = (math.pi * 2) / SIDES_OF_HEXAGON;
-    Offset firstPoint = Offset(radius * math.cos(0.0), radius * math.sin(0.0));
+    // Offset firstPoint = Offset(radius * math.cos(0.0), radius * math.sin(0.0));
+    Offset firstPoint = Offset(radius * math.sin(0.0), radius * math.cos(0.0));
     path.moveTo(firstPoint.dx + center.dx, firstPoint.dy + center.dy);
     for (int i = 1; i <= SIDES_OF_HEXAGON; i++) {
-      double x = radius * math.cos(angle * i) + center.dx;
-      double y = radius * math.sin(angle * i) + center.dy;
+      // double x = radius * math.cos(angle * i) + center.dx;
+      // double y = radius * math.sin(angle * i) + center.dy;
+      double x = radius * math.sin(angle * i) + center.dx;
+      double y = radius * math.cos(angle * i) + center.dy;
       path.lineTo(x, y);
     }
     path.close();

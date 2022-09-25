@@ -7,7 +7,7 @@ import 'dart:math' as math;
 
 
 class HexagonGrid extends StatelessWidget {
-  static const int nrX = 7;
+  static const int nrX = 8;
   static const int nrY = 10;
   static const int marginY = 0;
   static const int marginX = 0;
@@ -53,20 +53,21 @@ class HexagonGrid extends StatelessWidget {
   }
 
   Offset computeCenter(int x, int y) {
-    var centerX = computeX(x, y);
+    // var centerX = computeX(x, y);
+    var centerX = computeX(x);
     var centerY = computeY(x, y);
     return Offset(centerX, centerY);
   }
 
   computeY(int x, int y) {
     var centerY;
-    // if (x % 2 == 0) {
-    //   centerY = y * height + y * marginY + height / 2;
-    // } else {
-    //   centerY = y * height + (y + 0.5) * marginY + height;
-    // }
-    //centerY = y * height + y * marginY + height / 2;
-    centerY =  y * marginY + y * 1.5 * radius + radius ;
+    if (x % 2 == 0) {
+      centerY = y * height + y * marginY + height / 2;
+    } else {
+      centerY = y * height + (y + 0.5) * marginY + height;
+    }
+    // centerY = y * height + y * marginY + height / 2;
+    // centerY =  y * marginY + y * 1.5 * radius + radius ;
     double marginsVertical = computeEmptySpaceY() / 2;
     return centerY + marginsVertical;
   }
@@ -75,22 +76,21 @@ class HexagonGrid extends StatelessWidget {
     return screenHeight - ((nrY - 1) * height + 1.5 * height + totalMarginY());
   }
 
-  double computeX(int x, int y) {
-    // if (x % 2 == 0) {
-    //   centerY = y * height + y * marginY + height / 2;
-    // } else {
-    //   centerY = y * height + (y + 0.5) * marginY + height;
-    // }
-    var centerX;
+  //
+  double computeX(int x) {
     double marginsHorizontal = computeEmptySpaceX() / 2;
-    if(y % 2 == 0){
-      //centerX =  x * marginX + x * 1.5 * radius + radius ;
-      centerX = x * 2 * radius + x * marginX + 2 * radius / 2;
-    }else{
-      centerX =  x * 2 * radius + (x + 0.5) * marginX + 2 * radius;
-    }
-    return centerX + marginsHorizontal;
+    return x * marginX + x * 1.5 * radius + radius ;
   }
+  // double computeX(int x, int y) {
+  //   var centerX;
+  //   double marginsHorizontal = computeEmptySpaceX() / 2;
+  //   if(y % 2 == 0){
+  //     centerX = x * 2 * radius + x * marginX + 2 * radius / 2;
+  //   }else{
+  //     centerX =  x * 2 * radius + (x + 0.5) * marginX + 2 * radius;
+  //   }
+  //   return centerX ;
+  // }
 
   double computeEmptySpaceX() {
     return screenWidth -

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexagon_test/Modules/bottom_bar_custom_painter.dart';
+import 'package:hexagon_test/Modules/hexagon_grid_test.dart';
 import 'package:hexagon_test/lib.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart' as image;
@@ -24,7 +25,19 @@ class HexagonGridDemo extends StatelessWidget {
                 Expanded(
                   child: Container(
                     color: Colors.transparent,
-                    child: HexagonGrid(constraints.maxWidth, constraints.maxHeight - 40, snapshot.data),
+                    child: Stack(
+                        children: <Widget>[
+                          Positioned(
+                              bottom: 0.0,
+                              left: 0.0,
+                              right: 0.0,
+                              top: 0.0,
+                              child: CustomPaint(
+                                painter: HexagonGridTest(),
+                              )
+                          ),
+                        ]
+                    ),
                   ),
                 ),
                 Container(
