@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:hexagon_test/lib.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'hexagon_custom_painter.dart';
+import 'hexagon_paint.dart';
 
 
 

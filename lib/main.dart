@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hexagon_test/lib.dart';
+
+import 'Modules/hexagon_grid_demo_screen.dart';
 
 
 void main()  {

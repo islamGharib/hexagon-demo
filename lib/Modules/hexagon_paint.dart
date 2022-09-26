@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
-import 'package:hexagon_test/lib.dart';
 import 'dart:ui' as ui;
+
+import 'hexagon_custom_painter.dart';
 
 class HexagonPaint extends StatelessWidget {
   final Offset center;

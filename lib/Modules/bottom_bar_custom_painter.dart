@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hexagon_test/lib.dart';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
+
+import 'package:hexcolor/hexcolor.dart';
 
 class BottomBarCustomPainter extends CustomPainter {
 

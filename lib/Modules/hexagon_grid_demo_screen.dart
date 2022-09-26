@@ -1,10 +1,12 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:hexagon_test/Modules/bottom_bar_custom_painter.dart';
-import 'package:hexagon_test/Modules/hexagon_grid_test.dart';
-import 'package:hexagon_test/lib.dart';
 import 'dart:ui' as ui;
 import 'package:image/image.dart' as image;
+
+import '../lib.dart';
+import 'bottom_bar_custom_painter.dart';
+import 'hexagon_different_grid_design/hexagon_grid.dart';
+import 'hexagon_grid_test.dart';
 
 
 class HexagonGridDemo extends StatelessWidget {
@@ -38,6 +40,7 @@ class HexagonGridDemo extends StatelessWidget {
                           ),
                         ]
                     ),
+                    // child: HexagonGridDifferentDesign(constraints.maxWidth, constraints.maxHeight , snapshot.data),
                   ),
                 ),
                 Container(

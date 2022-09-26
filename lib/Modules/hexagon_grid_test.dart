@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hexagon_test/lib.dart';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:hexcolor/hexcolor.dart';
+
+import 'hexagon_custom_painter.dart';
+
 class HexagonGridTest extends CustomPainter {
-  static const int nrX = 7;
-  static const int nrY = 10;
+  static const int nrX = 9;
+  static const int nrY = 12;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -25,7 +28,7 @@ class HexagonGridTest extends CustomPainter {
     Offset firstOffset = Offset(0.5 * height, radius);
 
     Paint paint;
-    paint = Paint()..color = HexColor('#005284');
+    paint = Paint()..color = HexColor('#E9EDEF');
     final hexagonBorderPaint = Paint()
       ..color = HexColor('#002744')
       ..style = PaintingStyle.stroke
@@ -33,11 +36,11 @@ class HexagonGridTest extends CustomPainter {
     for(int j=0; j<nrY; j++){
       for(int i =0; i<nrX; i++){
         if(j % 2 == 0){
-          Path path = createHexagonPath(Offset(firstOffset.dx + i * height, j * (0.5 * length + radius) + firstOffset.dy), radius);
+          Path path = createHexagonPath(Offset(firstOffset.dx + i * height, j * 1.5 * radius + firstOffset.dy), radius);
           canvas.drawPath(path, paint);
           canvas.drawPath(path, hexagonBorderPaint);
         }else{
-          Path path = createHexagonPath(Offset(firstOffset.dx + i * height + 0.5 * height, j * (0.5 * length + radius) + firstOffset.dy), radius);
+          Path path = createHexagonPath(Offset(firstOffset.dx + i * height + 0.5 * height, j * 1.5 * radius  + firstOffset.dy), radius);
           canvas.drawPath(path, paint);
           canvas.drawPath(path, hexagonBorderPaint);
         }
