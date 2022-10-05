@@ -7,7 +7,7 @@ import 'dart:math' as math;
 
 class HexagonGridDifferentDesign extends StatelessWidget {
   static const int nrX = 8;
-  static const int nrY = 10;
+  static const int nrY = 11;
   static const int marginY = 0;
   static const int marginX = 0;
   final double screenWidth;
@@ -44,7 +44,7 @@ class HexagonGridDifferentDesign extends StatelessWidget {
     var maxHeight = 0.5 *
         (screenHeight) /
         (heightRatioOfRadius() * (nrY + 0.5));
-    return math.min(maxWidth, maxHeight);
+    return math.max(maxWidth, maxHeight);
 
   }
 

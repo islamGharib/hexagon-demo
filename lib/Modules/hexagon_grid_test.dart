@@ -8,11 +8,25 @@ import 'package:hexcolor/hexcolor.dart';
 import 'hexagon_custom_painter.dart';
 
 class HexagonGridTest extends CustomPainter {
-  static const int nrX = 9;
-  static const int nrY = 12;
+  // static const int nrX = 6;
+  // static const int nrY = 12;
+  final ui.Image? backgroundImage;
+  HexagonGridTest(this.backgroundImage);
 
   @override
   void paint(Canvas canvas, Size size) {
+    // 18 = 1/3 (size of the three hexagon) * 1/6 (number of the all radius 2+2+2)
+    Offset top = Offset(size.width / 3, size.height - 40);
+    Offset bottom = Offset(size.width / 3, size.height - 10);
+    Offset center = Offset((top.dx + bottom.dx) / 2, (top.dy + bottom.dy) / 2);
+    Offset radiusOffset = Offset(size.width / 3 + size.width /18, center.dy);
+    double distanceBetweenRadiusAndCenter = (radiusOffset - center).distance;
+    //Offset centerOfRigtLineRectangle = (size.width / 3, )
+    double radius = (radiusOffset - top).distance;
+    double height = computeHeight(radius);
+    double length = cornerLength(radius);
+    int nrX = size.width ~/ height;
+    int nrY = size.height ~/ (radius + 10);
     // 18 = 1/3 (size of the three hexagon) * 1/6 (number of the all radius 2+2+2)
     // Offset top = Offset(size.width / 3, size.height - 40);
     // Offset bottom = Offset(size.width / 3, size.height - 10);
@@ -22,9 +36,9 @@ class HexagonGridTest extends CustomPainter {
     //
     // //Offset centerOfRigtLineRectangle = (size.width / 3, )
     // double radius = (radiusOffset - top).distance;
-    double radius = computeRadius(size.width, size.height);
-    double height = computeHeight(radius);
-    double length = cornerLength(radius);
+    //double radius = computeRadius(size.width, size.height);
+
+
     Offset firstOffset = Offset(0.5 * height, radius);
 
     Paint paint;
@@ -44,9 +58,10 @@ class HexagonGridTest extends CustomPainter {
           canvas.drawPath(path, paint);
           canvas.drawPath(path, hexagonBorderPaint);
         }
-
       }
     }
+
+
 
     // double radius = size.width / 18;
     // center of the first hexagon
@@ -69,13 +84,13 @@ class HexagonGridTest extends CustomPainter {
 
   }
 
-  static double computeRadius(double screenWidth, double screenHeight) {
-    var maxWidth = (screenWidth) / (((nrX - 1) * 1.5) + 2);
-    var maxHeight = 0.5 *
-        (screenHeight) /
-        (heightRatioOfRadius() * (nrY + 0.5));
-    return math.min(maxWidth, maxHeight);
-  }
+  // static double computeRadius(double screenWidth, double screenHeight) {
+  //   var maxWidth = (screenWidth) / (((nrX - 1) * 1.5) + 2);
+  //   var maxHeight = 0.5 *
+  //       (screenHeight) /
+  //       (heightRatioOfRadius() * (nrY + 0.5));
+  //   return math.max(maxWidth, maxHeight);
+  // }
 
   // static double computeRadius(double screenWidth, double screenHeight) {
   //   var maxWidth = (screenWidth - totalMarginX()) / (((nrX - 1) * 1.5) + 2);

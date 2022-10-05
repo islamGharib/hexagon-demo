@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hexagon_different_grid_design/crown_icon_icons.dart';
+import 'package:hexagon_different_grid_design/crown_tag_icons.dart';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:hexcolor/hexcolor.dart';
 
 class BottomBarCustomPainter extends CustomPainter {
+
+  final ui.Image? crownImage;
+  BottomBarCustomPainter(this.crownImage);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -14,10 +19,13 @@ class BottomBarCustomPainter extends CustomPainter {
     Offset bottom = Offset(size.width / 3, size.height - 10);
     Offset center = Offset((top.dx + bottom.dx) / 2, (top.dy + bottom.dy) / 2);
     Offset radiusOffset = Offset(size.width / 3 + size.width /18, center.dy);
-    double distanceBetweenRadiusAndCenter = (radiusOffset - center).distance;
+          // half of height
+    // double distanceBetweenRadiusAndCenter = (radiusOffset - center).distance;
 
     //Offset centerOfRigtLineRectangle = (size.width / 3, )
     double radius = (radiusOffset - top).distance;
+    double heightRatioOfRadius = math.cos(math.pi / 6);
+    double height = heightRatioOfRadius * radius * 2;
     // double radius = size.width / 18;
     // center of the first hexagon
     final hexagonBorderPaint = Paint()
@@ -26,9 +34,9 @@ class BottomBarCustomPainter extends CustomPainter {
       ..strokeWidth = 1.0;
     Path path1 = createHexagonPath(radiusOffset, radius);
     // center of the second hexagon
-    Path path2 = createHexagonPath(Offset(radiusOffset.dx + 2 * distanceBetweenRadiusAndCenter, radiusOffset.dy), radius);
+    Path path2 = createHexagonPath(Offset(radiusOffset.dx + height, radiusOffset.dy), radius);
     // center of the third hexagon
-    Path path3 = createHexagonPath(Offset(radiusOffset.dx + 4 * distanceBetweenRadiusAndCenter, radiusOffset.dy), radius);
+    Path path3 = createHexagonPath(Offset(radiusOffset.dx + 2 * height, radiusOffset.dy), radius);
     Paint paint;
     paint = Paint()..color = HexColor('#005284');
     // drawing first rectangle from left to 1/3 of size width
@@ -58,12 +66,21 @@ class BottomBarCustomPainter extends CustomPainter {
       ..addText(String.fromCharCode(icon.codePoint));
     var para = builder.build();
     para.layout(ui.ParagraphConstraints(width: radius));
-    canvas.drawParagraph(para, Offset(size.width / 3 + distanceBetweenRadiusAndCenter - para.width / 4, radiusOffset.dy - para.height / 2));
+    canvas.drawParagraph(para, Offset(size.width / 3 + 0.5 * height - para.width / 4, radiusOffset.dy - para.height / 2));
+    const crown = CrownTag.crown;
+    var crownBuilder = ui.ParagraphBuilder(ui.ParagraphStyle(
+      fontFamily: crown.fontFamily,
+    ))
+      ..addText(String.fromCharCode(crown.codePoint));
+    var crownPara = crownBuilder.build();
+    crownPara.layout(ui.ParagraphConstraints(width: radius));
+    canvas.drawParagraph(crownPara, Offset(30,20));
+
 
     // drawing 2 internal hexagon at the middle hexagon
     double internalHexagonRadius = radius / 4;
-    Path firstInternalHexagonPath = createHexagonPath(Offset((center.dx + 3 * distanceBetweenRadiusAndCenter) - distanceBetweenRadiusAndCenter / 2, radiusOffset.dy), internalHexagonRadius);
-    Path secondInternalHexagonPath = createHexagonPath(Offset((center.dx + 3 * distanceBetweenRadiusAndCenter) + distanceBetweenRadiusAndCenter / 2, radiusOffset.dy), internalHexagonRadius);
+    Path firstInternalHexagonPath = createHexagonPath(Offset((center.dx + 1.5 * height) - height / 4, radiusOffset.dy), internalHexagonRadius);
+    Path secondInternalHexagonPath = createHexagonPath(Offset((center.dx + 1.5 * height) + height / 4, radiusOffset.dy), internalHexagonRadius);
     final internalHexagonBorderPaint = Paint()
       ..color = HexColor('#C7D0D5')
       ..style = PaintingStyle.stroke
@@ -73,6 +90,10 @@ class BottomBarCustomPainter extends CustomPainter {
     canvas.drawPath(firstInternalHexagonPath, internalHexagonBorderPaint);
     canvas.drawPath(secondInternalHexagonPath, internalHexagonPaint);
     canvas.drawPath(secondInternalHexagonPath, internalHexagonBorderPaint);
+
+    Paint paintCircle = Paint()..color = HexColor('#F3F4F6');
+    canvas.drawCircle(Offset(radiusOffset.dx + 2 * height, radiusOffset.dy + 0.5 * internalHexagonRadius), internalHexagonRadius, paintCircle);
+    // canvas.drawImage(crownImage!, Offset(radiusOffset.dx + 2 * height - crownImage!.width / 2, radiusOffset.dy -  0.5 * internalHexagonRadius - crownImage!.height / 2), paintCircle);
 
     // display vs word between the 2 internal hexagon
     TextSpan span = TextSpan(
@@ -91,7 +112,7 @@ class BottomBarCustomPainter extends CustomPainter {
         textAlign: TextAlign.center
     );
     tp.layout();
-    tp.paint(canvas, Offset(center.dx + 3 * distanceBetweenRadiusAndCenter - tp.width / 2, radiusOffset.dy - tp.height / 2));
+    tp.paint(canvas, Offset(center.dx + 1.5 * height - tp.width / 2, radiusOffset.dy - tp.height / 2));
 
   }
 

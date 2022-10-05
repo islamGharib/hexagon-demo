@@ -22,7 +22,6 @@ class HexagonPainterDifferentDesign extends CustomPainter {
       ..color = HexColor('002744')
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
-    canvas.drawPath(path, borderPaint);
     if(backgroundImage != null){
       // Paint paintCircle = Paint()..color = Colors.black;
       // canvas.drawCircle(center, radius-7, paint);
@@ -39,6 +38,7 @@ class HexagonPainterDifferentDesign extends CustomPainter {
       canvas.drawImage(backgroundImage!, Offset(center.dx - backgroundImage!.width / 2, center.dy - backgroundImage!.height / 2), paint);
     }else{
       canvas.drawPath(path, paint);
+      canvas.drawPath(path, borderPaint);
     }
 
   }

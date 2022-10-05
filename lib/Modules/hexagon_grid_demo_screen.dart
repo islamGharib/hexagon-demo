@@ -13,7 +13,7 @@ class HexagonGridDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: HexColor('#E9EDEF'),
       appBar: AppBar(
         title: Text('Hexagon Grid Demo'),
       ),
@@ -27,37 +27,42 @@ class HexagonGridDemo extends StatelessWidget {
                 Expanded(
                   child: Container(
                     color: Colors.transparent,
-                    child: Stack(
-                        children: <Widget>[
-                          Positioned(
-                              bottom: 0.0,
-                              left: 0.0,
-                              right: 0.0,
-                              top: 0.0,
-                              child: CustomPaint(
-                                painter: HexagonGridTest(),
-                              )
-                          ),
-                        ]
-                    ),
-                    // child: HexagonGridDifferentDesign(constraints.maxWidth, constraints.maxHeight , snapshot.data),
+                    // child: Stack(
+                    //     children: <Widget>[
+                    //       Positioned(
+                    //           bottom: 0.0,
+                    //           left: 0.0,
+                    //           right: 0.0,
+                    //           top: 0.0,
+                    //           child: CustomPaint(
+                    //             painter: HexagonGridTest(snapshot.data),
+                    //           )
+                    //       ),
+                    //     ]
+                    // ),
+                    child: HexagonGridDifferentDesign(constraints.maxWidth, constraints.maxHeight , snapshot.data),
                   ),
                 ),
-                Container(
-                  height: 50,
-                  child: Stack(
-                      children: <Widget>[
-                        Positioned(
-                            bottom: 0.0,
-                            left: 0.0,
-                            right: 0.0,
-                            top: 0.0,
-                            child: CustomPaint(
-                              painter: BottomBarCustomPainter(),
-                            )
-                        ),
-                      ]
-                  ),
+                FutureBuilder(
+                  future: getUiImage('assets/images/crown.png', 20, 20),
+                  builder: (context, AsyncSnapshot<ui.Image> snapshot){
+                    return SizedBox(
+                      height: 50,
+                      child: Stack(
+                          children: <Widget>[
+                            Positioned(
+                                bottom: 0.0,
+                                left: 0.0,
+                                right: 0.0,
+                                top: 0.0,
+                                child: CustomPaint(
+                                  painter: BottomBarCustomPainter(snapshot.data),
+                                )
+                            ),
+                          ]
+                      ),
+                    );
+                  }
                 )
               ],
             );
